@@ -1,20 +1,31 @@
+import getArtistByArtistId from "@/actions/getArtistByArtistId"
 import { Button } from "@/components/ui/button"
 import { Share2, Eye } from "lucide-react"
 import Image from "next/image"
 
 interface AlbumHeroProps {
-    mainImageUrl?: string
-    coverImageUrl?: string
-    albumTitle?: string
-    artistName?: string
+    mainImageUrl: string
+    coverImageUrl: string
+    albumTitle: string
+    artistId: string
 }
 
-export function AlbumHero({
+const imageStyle = {
+//   borderRadius: '50%',
+//   border: '1px solid #',
+  width: '100px',
+  height: 'auto',
+}
+
+export async function AlbumHero({
     mainImageUrl,
     coverImageUrl,
     albumTitle,
-    artistName
+    artistId
 }: AlbumHeroProps) {
+
+    const artist = await getArtistByArtistId(artistId);
+    
     return (
         <section className="relative  bg-black overflow-hidden m-8">
             <div className="">
@@ -22,7 +33,7 @@ export function AlbumHero({
                 {/* Background Artist Image */}
                 <div className="absolute inset-0">
                     <Image
-                        src={mainImageUrl ||"/Cover.webp"}
+                        src={coverImageUrl ||"/Cover.webp"}
                         alt="Canon"
                         fill
                         className="object-cover object-center opacity-80 aspect-w-16/9"
@@ -34,14 +45,13 @@ export function AlbumHero({
                 {/* Content */}
                 <div className="relative z-10 container mx-auto px-6 py-12  flex items-center">
                     <div className="flex items-center gap-12 max-w-7xl">
-                        {/* Album Cover */}
+                        {/* Album Main */}
                         <div className="flex-shrink-0">
-                            <Image
-                                src={coverImageUrl ||"/Cover.webp"}
+                            <img
+                                src={mainImageUrl ||"/Cover.webp"}
                                 alt="No Loss Album Cover"
-                                width={256}
-                                height={256}
-                                className="rounded-lg shadow-2xl"
+                                style={imageStyle}
+                                // className="rounded-lg shadow-2xl w-auto h-auto aspect-1/1"
                             />
                         </div>
 
@@ -56,7 +66,7 @@ export function AlbumHero({
                             <div>
                                 <h1 className="text-7xl font-bold text-white mb-3 tracking-tight">{albumTitle}</h1>
                                 <p className="text-xl text-white/90">
-                                    Album By <span className="text-yellow-400 font-semibold">{artistName}</span>
+                                    Album By <span className="text-yellow-400 font-semibold">{artist.name}</span>
                                 </p>
                             </div>
 

@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import Heading from "@/components/ui/heading"
 import { Separator } from "@/components/ui/separator"
 // import AlertModal from "@/components/modals/AlertModal";
-import instance from "@/lib/axios";
+
 import AlbumForm from "./components/album-form";
 import { Album as AlbumType } from "@/types/album";
+import instance from "@/lib/axios-client";
 
 
 interface AlbumFormProps {
@@ -31,6 +32,7 @@ const AlbumFormPage = ({ initialData }: AlbumFormProps) => {
     const description = initialData ? "Edit a Album" : "Add a new Album";
 
     const [isClient, setIsClient] = useState(false)
+    // console.log(params);
 
 
     const onDelete = async () => {
@@ -65,7 +67,7 @@ const AlbumFormPage = ({ initialData }: AlbumFormProps) => {
                 onConfirm={onDelete}
                 loading={loading}
             /> */}
-            <div className="flex justify-between items-center my-4">
+            <div className="flex justify-between items-center my-4 mx-2">
                 <Heading
                     title={title}
                     description={description}

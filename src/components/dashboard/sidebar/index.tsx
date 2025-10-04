@@ -74,7 +74,6 @@ export function DashboardSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const params = usePathname();
-  console.log(params);
 
   return (
     <Sidebar {...props} className={cn("py-sides", className)}>

@@ -18,9 +18,10 @@ import { Button } from "@/components/ui/button"
 import Heading from "@/components/ui/heading"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import instance from "@/lib/axios";
+
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import instance from "@/lib/axios-client";
 
 const formSchema = z.object({
   mainImageUrl: z.string().min(1),
@@ -53,7 +54,7 @@ const AlbumForm = ({
   });
 
   const onSubmit = async (data: AlbumFormValues) => {
-    console.log(data);
+    // console.log(data);
     try {
 
       setLoading(true);
@@ -67,6 +68,7 @@ const AlbumForm = ({
       toast.success(toastMsg);
 
     } catch (error) {
+      console.log(error);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
