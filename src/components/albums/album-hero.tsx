@@ -3,15 +3,18 @@ import { Share2, Eye } from "lucide-react"
 import Image from "next/image"
 
 interface AlbumHeroProps {
-    profileImageUrl?: string
+    mainImageUrl?: string
     coverImageUrl?: string
     albumTitle?: string
     artistName?: string
 }
 
-export function AlbumHero(
-
-) {
+export function AlbumHero({
+    mainImageUrl,
+    coverImageUrl,
+    albumTitle,
+    artistName
+}: AlbumHeroProps) {
     return (
         <section className="relative  bg-black overflow-hidden m-8">
             <div className="">
@@ -19,7 +22,7 @@ export function AlbumHero(
                 {/* Background Artist Image */}
                 <div className="absolute inset-0">
                     <Image
-                        src="/Cover.webp"
+                        src={mainImageUrl ||"/Cover.webp"}
                         alt="Canon"
                         fill
                         className="object-cover object-center opacity-80 aspect-w-16/9"
@@ -34,7 +37,7 @@ export function AlbumHero(
                         {/* Album Cover */}
                         <div className="flex-shrink-0">
                             <Image
-                                src="/Cover.webp"
+                                src={coverImageUrl ||"/Cover.webp"}
                                 alt="No Loss Album Cover"
                                 width={256}
                                 height={256}
@@ -51,9 +54,9 @@ export function AlbumHero(
                             </div>
 
                             <div>
-                                <h1 className="text-7xl font-bold text-white mb-3 tracking-tight">No Loss</h1>
+                                <h1 className="text-7xl font-bold text-white mb-3 tracking-tight">{albumTitle}</h1>
                                 <p className="text-xl text-white/90">
-                                    Album By <span className="text-yellow-400 font-semibold">Canon</span>
+                                    Album By <span className="text-yellow-400 font-semibold">{artistName}</span>
                                 </p>
                             </div>
 

@@ -32,6 +32,7 @@ export const auth = {
                 email,
                 password,
             });
+            console.log("SignIn Response:", response.data);
 
             // console.log("SignIn Response:", response.data);
 
