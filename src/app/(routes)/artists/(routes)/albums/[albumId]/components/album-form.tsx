@@ -1,7 +1,7 @@
 'use client'
 
 import * as z from "zod";
-import React from 'react'
+import React, { useState } from 'react'
 
 import { ImageUpload } from '@/components/ui/image-upload'
 import {
@@ -22,6 +22,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import instance from "@/lib/axios-client";
+import { Album } from "@/types/album";
+import { Trash } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
+interface AlbumFormProps {
+  initialData: Album | null
+}
 
 const formSchema = z.object({
   mainImageUrl: z.string().min(1),
@@ -34,18 +41,25 @@ type AlbumFormValues = z.infer<typeof formSchema>
 
 const AlbumForm = ({
   initialData,
-}: any) => {
+}: AlbumFormProps) => {
   const params = useParams();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
-  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const title = initialData ? "Edit Album" : "Create Album";
+  const description = initialData ? "Edit a Album" : "Add a new Album";
   const toastMsg = initialData ? "Album updated." : "Album created.";
   const action = initialData ? "Save Changes" : "Create";
 
   const form = useForm<AlbumFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       mainImageUrl: '',
       coverImageUrl: '',
       name: '',
@@ -59,7 +73,7 @@ const AlbumForm = ({
 
       setLoading(true);
       if (initialData) {
-        await instance.patch(`/albums/update`, data);
+        await instance.patch(`/albums/${params.albumId}`, data);
       } else {
         await instance.post(`/albums/create`, data);
       }
@@ -76,7 +90,47 @@ const AlbumForm = ({
   }
 
 
-  return (
+  const onDelete = async () => {
+    try {
+
+      setLoading(true);
+      await instance.delete(`/Albums/${params.AlbumId}`);
+      router.push(`/Albums`);
+      router.refresh();
+      toast.success("Album Deleted.");
+
+    } catch (error) {
+      toast.error("Make sure you remove all Products using this Album first.");
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  }
+
+  if (!mounted) {
+    return null;
+  }
+
+
+  return (<>
+    <div className="flex justify-between items-center my-4 mx-2">
+      <Heading
+        title={title}
+        description={description}
+      />
+      {initialData && (
+        <Button
+          disabled={loading}
+          variant="destructive"
+          size="icon"
+          onClick={() => { setOpen(true) }}
+        >
+          <Trash className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
+    <Separator />
+
     <div className='p-4 mx-auto max-w-2xl'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
@@ -182,6 +236,8 @@ const AlbumForm = ({
         </form>
       </Form>
     </div>
+    <Separator />
+  </>
   )
 }
 

@@ -1,97 +1,43 @@
-"use client"
-
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { Trash } from "lucide-react"
-import { useParams, useRouter } from "next/navigation";
-
-import { Button } from "@/components/ui/button"
-import Heading from "@/components/ui/heading"
-import { Separator } from "@/components/ui/separator"
-// import AlertModal from "@/components/modals/AlertModal";
-
-import AlbumForm from "./components/album-form";
 import { Album as AlbumType } from "@/types/album";
-import instance from "@/lib/axios-client";
+import AlbumForm from "./components/album-form";
+import getAlbumByAlbumId from "@/actions/getAlbumByAlbumId";
 
-
-interface AlbumFormProps {
-    initialData: AlbumType | null
+interface AlbumFormPageProps {
+  params: {
+    albumId: string;
+  };
 }
 
+const AlbumFormPage = async ({ params }: AlbumFormPageProps) => {
+  const { albumId } = await params;
 
+  
+  if (albumId === "new") {
+    return <AlbumForm initialData={null} />;
+  }
 
-const AlbumFormPage = ({ initialData }: AlbumFormProps) => {
-    const params = useParams();
-    const router = useRouter();
-
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-
-    const title = initialData ? "Edit Album" : "Create Album";
-    const description = initialData ? "Edit a Album" : "Add a new Album";
-
-    const [isClient, setIsClient] = useState(false)
-    // console.log(params);
-
-
-    const onDelete = async () => {
-        try {
-
-            setLoading(true);
-            await instance.delete(`/Albums/${params.AlbumId}`);
-            router.push(`/Albums`);
-            router.refresh();
-            toast.success("Album Deleted.");
-
-        } catch (error) {
-            toast.error("Make sure you remove all Products using this Album first.");
-        } finally {
-            setLoading(false);
-            setOpen(false);
-        }
-    }
-
-    useEffect(() => {
-        setIsClient(true)
-    }, [])
-
-    if (!isClient)
-        return null;
-
+  
+  const initialData = await getAlbumByAlbumId(albumId);
+  
+  if (!initialData) {
     return (
-        <>
-            {/* <AlertModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
-                onConfirm={onDelete}
-                loading={loading}
-            /> */}
-            <div className="flex justify-between items-center my-4 mx-2">
-                <Heading
-                    title={title}
-                    description={description}
-                />
-                {initialData && (
-                    <Button
-                        disabled={loading}
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => { setOpen(true) }}
-                    >
-                        <Trash className="h-4 w-4" />
-                    </Button>
-                )}
-            </div>
-            <Separator />
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <h2 className="text-2xl font-semibold mb-2">Album not found</h2>
+        <p className="text-muted-foreground mb-4">
+          {`The album you are looking for doesnot exist or was removed.`}
+        </p>
+        <a
+          href="/artists/albums"
+          className="text-blue-600 hover:underline font-medium"
+        >
+          ← Back to Albums
+        </a>
+      </div>
+    );
+  }
 
-            {/* Form */}
-            <AlbumForm />
-            <Separator />
-
-
-        </>
-    )
-}
+  
+  return <AlbumForm initialData={initialData} />;
+};
 
 export default AlbumFormPage;
